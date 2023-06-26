@@ -3,6 +3,7 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.util.List;
 
@@ -24,81 +25,107 @@ public class UserDaoHibernateImpl implements UserDao {
     private final String hqlDelete = "delete FROM User";
 
 
-    private final Session session = util.getSession();
     @Override
     public void createUsersTable() {
-        try (session) {
-            session.beginTransaction();
+        Transaction transaction = null;
+        try (Session session = util.getSession()) {
+            transaction = session.beginTransaction();
 
             session.createSQLQuery(hqlCreateTable).addEntity(User.class).executeUpdate();
 
-            session.getTransaction().commit();
+            transaction.commit();
         } catch (Exception e) {
-            session.getTransaction().rollback();
+            if (transaction != null) {
+                transaction.rollback();
+                System.out.println("Error in sql query");
+            }
+            System.out.println("Error initializing: transaction == null");
         }
     }
 
     @Override
     public void dropUsersTable() {
-        try (session) {
-            session.beginTransaction();
+        Transaction transaction = null;
+        try (Session session = util.getSession()) {
+            transaction = session.beginTransaction();
 
             session.createSQLQuery(hqlDropTable).executeUpdate();
 
-            session.getTransaction().commit();
+            transaction.commit();
         } catch (Exception e) {
-            session.getTransaction().rollback();
+            if (transaction != null) {
+                transaction.rollback();
+                System.out.println("Error in sql query");
+            }
+            System.out.println("Error initializing: transaction == null");
         }
     }
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        try (session) {
-            session.beginTransaction();
+        Transaction transaction = null;
+        try (Session session = util.getSession()) {
+            transaction = session.beginTransaction();
 
-            User user = new User(name, lastName, age);
-            session.save(user);
+            session.save(new User(name, lastName, age));
 
-            session.getTransaction().commit();
+            transaction.commit();
         } catch (Exception e) {
-            session.getTransaction().rollback();
+            if (transaction != null) {
+                transaction.rollback();
+                System.out.println("Error in sql query");
+            }
+            System.out.println("Error initializing: transaction == null");
         }
     }
 
     @Override
     public void removeUserById(long id) {
-        try (session) {
-            session.beginTransaction();
+        Transaction transaction = null;
+        try (Session session = util.getSession()) {
+            transaction = session.beginTransaction();
 
             User user = session.get(User.class, id);
             session.delete(user);
 
-            session.getTransaction().commit();
+            transaction.commit();
         } catch (Exception e) {
-            session.getTransaction().rollback();
+            if (transaction != null) {
+                transaction.rollback();
+                System.out.println("Error in sql query");
+            }
+            System.out.println("Error initializing: transaction == null");
         }
     }
 
     @Override
     public List<User> getAllUsers() {
-        try (session) {
+        Transaction transaction = null;
+        try (Session session = util.getSession()) {
+            transaction = session.beginTransaction();
             List<User> userList = session.createQuery(hqlFU).list();
 
             System.out.println(userList);
+            transaction.commit();
             return userList;
         }
     }
 
     @Override
     public void cleanUsersTable() {
-        try (session) {
-            session.beginTransaction();
+        Transaction transaction = null;
+        try (Session session = util.getSession()) {
+            transaction = session.beginTransaction();
 
             session.createQuery(hqlDelete).executeUpdate();
 
-            session.getTransaction().commit();
+            transaction.commit();
         } catch (Exception e) {
-            session.getTransaction().rollback();
+            if (transaction != null) {
+                transaction.rollback();
+                System.out.println("Error in sql query");
+            }
+            System.out.println("Error initializing: transaction == null");
         }
     }
 }
