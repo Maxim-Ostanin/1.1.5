@@ -7,7 +7,6 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
-import org.hibernate.service.ServiceRegistry;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -21,12 +20,13 @@ public class Util {
     private final String PASSWORD = "root";
 
     public Connection getConnection() {
-        Connection connection = null;
+        Connection connection;
         try {
             connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot connect the database!", e);
         }
+        System.out.println("Соединение установленно!");
         return connection;
     }
 
@@ -53,6 +53,7 @@ public class Util {
             session = sessionFactory.getCurrentSession();
 
         }
+        System.out.println("Session Ok!");
         return session;
     }
 }
