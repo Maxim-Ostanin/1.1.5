@@ -5,6 +5,7 @@ import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
@@ -27,37 +28,23 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void createUsersTable() {
-        Transaction transaction = null;
         try (Session session = util.getSession()) {
-            transaction = session.beginTransaction();
+            Transaction transaction = session.beginTransaction();
 
             session.createSQLQuery(hqlCreateTable).addEntity(User.class).executeUpdate();
 
             transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-                System.out.println("Error in sql query");
-            }
-            System.out.println("Error initializing: transaction == null");
         }
     }
 
     @Override
     public void dropUsersTable() {
-        Transaction transaction = null;
         try (Session session = util.getSession()) {
-            transaction = session.beginTransaction();
+            Transaction transaction = session.beginTransaction();
 
             session.createSQLQuery(hqlDropTable).executeUpdate();
 
             transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-                System.out.println("Error in sql query");
-            }
-            System.out.println("Error initializing: transaction == null");
         }
     }
 
@@ -100,16 +87,15 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public List<User> getAllUsers() {
-        Transaction transaction = null;
         try (Session session = util.getSession()) {
-            transaction = session.beginTransaction();
-            List<User> userList = session.createQuery(hqlFU).list();
-
-            System.out.println(userList);
+            Transaction transaction = session.beginTransaction();
+            TypedQuery<User> query = session.createQuery(hqlFU);
+            List<User> userList = query.getResultList();
             transaction.commit();
             return userList;
         }
     }
+
 
     @Override
     public void cleanUsersTable() {
