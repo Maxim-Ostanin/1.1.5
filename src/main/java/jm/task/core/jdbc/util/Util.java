@@ -41,7 +41,6 @@ public class Util {
             settings.put(Environment.PASS, PASSWORD);
             settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5Dialect");
             settings.put(Environment.SHOW_SQL, "true");
-            settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
 
             configuration.setProperties(settings);
 
@@ -50,7 +49,7 @@ public class Util {
             StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                     .applySettings(configuration.getProperties()).build();
             SessionFactory sessionFactory = configuration.buildSessionFactory(serviceRegistry);
-            session = sessionFactory.getCurrentSession();
+            session = sessionFactory.openSession();
 
         }
         System.out.println("Session Ok!");
